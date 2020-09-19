@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ViktoriaGatz/file_system_C.svg?branch=master)](https://travis-ci.org/ViktoriaGatz/file_system_C)
 ### Лабораторная 2. Работа с файловой системой. Создание проекта «Управление файловой системой»
 
 * Язык программирования: С/С++
@@ -18,3 +19,10 @@
     4. Подсчет общего размера указанной директории или файла;
     5. Отображение всех файлов в указанной директории;
     6. Отображение всех процессов из файловой системы procfs. (http://manpages.ubuntu.com/manpages/precise/ru/man5/proc.5.html)
+
+### Сборка и запуск
+````$ make # сборка````                 
+````$ ./bin/proc # запуск без установки````                  
+````$ make install # установка````                 
+````$ proc # запуск````               
+````$ make uninstall # удаление````                 
