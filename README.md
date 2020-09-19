@@ -21,8 +21,8 @@
     6. Отображение всех процессов из файловой системы procfs. (http://manpages.ubuntu.com/manpages/precise/ru/man5/proc.5.html)
 
 ### Сборка и запуск
-````$ make # сборка````                 
-````$ ./bin/proc # запуск без установки````                  
-````$ make install # установка````                 
-````$ proc # запуск````               
-````$ make uninstall # удаление````                 
+* ````$ make # сборка````                 
+* ````$ ./bin/proc # запуск без установки````                  
+* ````$ make install # установка````                 
+* ````$ proc # запуск````               
+* ````$ make uninstall # удаление````                 
