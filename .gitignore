@@ -1,4 +1,4 @@
 a
-/bin
-/obj
-
+/bin/proc
+*.o
+a.out

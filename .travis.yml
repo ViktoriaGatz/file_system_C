@@ -1,0 +1,14 @@
+language: c
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev
+
+script:
+  - make && make test_run
+  - git ls-files src/ | xargs clang-format -i && git diff --exit-code
+  - git ls-files test/ | xargs clang-format -i && git diff --exit-code
+
+compiler: gcc
+
+dist: xenial
