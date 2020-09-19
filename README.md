@@ -20,6 +20,16 @@
     5. Отображение всех файлов в указанной директории;
     6. Отображение всех процессов из файловой системы procfs. (http://manpages.ubuntu.com/manpages/precise/ru/man5/proc.5.html)
 
+### Примеры запуска
+* ````./bin/proc --help # вывод меню помощи````
+* ````./bin/proc --move ./file.txt ./bin/file.txt # переместить файл file.txt из текущей директории в папку bin````
+* ````./bin/proc --copy ./file.txt ./bin/file.txt # копировать файл file.txt из текущей директории в папку bin````
+* ````./bin/proc --delete ./file.txt # удалить файл file.txt из текущей директории````
+* ````./bin/proc --scope ./file.txt # узнать размер файла file.txt````
+* ````./bin/proc --scope ./bin # узнать размер директории bin````
+* ````./bin/proc --ls ./bin # отобразить название всех файлов в директории bin````
+* ````./bin/proc --procfs # отобразить все процессы файловой системы procfs````
+
 ### Сборка и запуск
 * ````$ make # сборка````                 
 * ````$ ./bin/proc # запуск без установки````                  
