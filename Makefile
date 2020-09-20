@@ -1,4 +1,5 @@
 CC := gcc -Wall -Werror
+C := gcc
 FLAGS := -std=c99
 FLAG := -std=c11
 SRC_DIR := ./src
