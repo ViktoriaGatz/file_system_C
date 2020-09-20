@@ -36,3 +36,7 @@
 * ````$ make install # установка````                 
 * ````$ proc # запуск````               
 * ````$ make uninstall # удаление````                 
+
+### Подробнее о procfs
+![alt text](screen/screen1.png "screen 1, procfs")
+![alt text](screen/screen2.png "screen 2, procfs")
