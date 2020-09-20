@@ -38,5 +38,5 @@
 * ````$ make uninstall # удаление````                 
 
 ### Подробнее о procfs
-![alt text](screen/screen1.png "screen 1, procfs")
-![alt text](screen/screen2.png "screen 2, procfs")
+![alt text](screen/screen1.jpg "screen 1, procfs")
+![alt text](screen/screen2.jpg "screen 2, procfs")
