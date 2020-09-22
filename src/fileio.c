@@ -6,9 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h> // scope
 #include <string.h>
-#include <sys/stat.h>  // scope
-#include <sys/types.h> // scope
-#include <sys/types.h> // для определения пользователя по UID
+#include <sys/stat.h> // scope
+#include <sys/types.h> // scope // для определения пользователя по UID
 #include <time.h>   // миги в секунды
 #include <unistd.h> // scope
 
@@ -52,7 +51,7 @@ int delete (char *file) {
 }
 
 long scope(char *fileName) {
-  printf("Узнать размер файла %s\n", fileName);
+  printf("Узнать размер %s\n", fileName);
   long size = 0;
 
   int descriptor = open(fileName, O_RDONLY);
@@ -64,8 +63,33 @@ long scope(char *fileName) {
       struct stat statistics;
 
       if (fstat(descriptor, &statistics) != -1) {
+        if (S_ISDIR(statistics.st_mode)) {
+          printf("Это директория\n");
+
+          DIR *dir;
+          struct dirent *ent;
+          if ((dir = opendir(fileName)) != NULL) {
+            while ((ent = readdir(dir)) != NULL) {
+              if (!((strcmp(ent->d_name, ".") == 0) ||
+                    (strcmp(ent->d_name, "..") == 0))) {
+                char buf_path[256] = "";
+                strcat(buf_path, fileName);
+                strcat(buf_path, ent->d_name);
+                size += scope(buf_path);
+                printf("size %s = %ld\n", ent->d_name, size);
+              }
+            }
+            closedir(dir);
+          } else {
+            fprintf(stderr, "Ошибка поиска файлов в директории\n");
+            return -1;
+          }
+
+          printf("Размер директории = %ld байт\n", size);
+          return size;
+        }
         size = statistics.st_size;
-        printf("Размер файла/директории = %ld байт\n", statistics.st_size);
+        printf("Размер файла = %ld байт\n", statistics.st_size);
       }
       fclose(file);
     }
