@@ -1,6 +1,34 @@
 #include "fileio.h"
+#include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h> // работа с процессами
+
+void log_out(int signo) {
+  printf("%d\n", signo);
+  signal(20, log_out);
+}
+
+int create(char *name, char *args[]) {
+  int child_status;
+  pid_t child = fork();
+  if (child == 0) {
+    if (execv(name, args) == -1) {
+      fprintf(stderr, "Невозможные параметры для запуска процесса\n");
+      return 1;
+    }
+  } else {
+    wait(&child_status);
+    printf("done\n");
+  }
+  // printf("hello 2 %d\n", getpid());
+  // printf("hello 3 %d\n", getppid());
+  return 0;
+}
 
 int main(int argc, char **argv) {
 
@@ -28,6 +56,8 @@ int main(int argc, char **argv) {
         "директории bin\n"
         "--procfs \t\t\t\t отобразить все процессы файловой системы "
         "procfs\n");
+    return 0;
+
   } else if (!strcmp(argv[1], "--move") || !strcmp(argv[1], "-m")) {
     if (argc < 4) {
       fprintf(stderr, "Недостаточно аргументов\n");
@@ -35,33 +65,119 @@ int main(int argc, char **argv) {
     }
 
     move(argv[2], argv[3]);
+    return 0;
+
   } else if (!strcmp(argv[1], "--copy") || !strcmp(argv[1], "-c")) {
     if (argc < 4) {
       fprintf(stderr, "Недостаточно аргументов\n");
     }
 
     copy(argv[2], argv[3]);
+    return 0;
+
   } else if (!strcmp(argv[1], "--delete") || !strcmp(argv[1], "-d")) {
     if (argc < 3) {
       fprintf(stderr, "Недостаточно аргументов\n");
     }
 
     delete (argv[2]);
+    return 0;
+
   } else if (!strcmp(argv[1], "--scope") || !strcmp(argv[1], "-s")) {
     if (argc < 3) {
       fprintf(stderr, "Недостаточно аргументов\n");
     }
 
     scope(argv[2]);
+    return 0;
+
   } else if (!strcmp(argv[1], "--ls") || !strcmp(argv[1], "-l")) {
+    if (argc < 3) {
+      fprintf(stderr, "Недостаточно аргументов\n");
+    }
 
     ls(argv[2]);
+    return 0;
+
   } else if (!strcmp(argv[1], "--procfs") || !strcmp(argv[1], "-p")) {
 
-    procfs(argv[2]);
+    procfs();
+    return 0;
+
+  } else if (!strcmp(argv[1], "--create") || !strcmp(argv[1], "-r")) {
+    if (argc < 3) {
+      fprintf(stderr, "Недостаточно аргументов\n");
+    }
+
+    if (argc >= 4) {
+      if (!strcmp(argv[2], "--fone") || !strcmp(argv[2], "-f")) {
+        int count = argc;
+        char **buf = malloc(count);
+        for (int i = 0; i < count; i++) {
+          buf[i] = malloc(255);
+        }
+        buf[0] = "nohup";
+        strcpy(buf[1], argv[3]);
+        for (int i = 0; i < (argc - 4); i++) {
+          strcpy(buf[i + 2], argv[i + 4]);
+        }
+        strcpy(buf[count - 2], "&");
+        buf[count - 1] = 0;
+
+        create("/usr/bin/nohup", buf);
+        // printf("%d\n", execl("ls", "ls", "./", (char *)0));
+        // execl("/usr/bin/nohup", "nohup", "./example/hello", "arg1", "arg2",
+        //       "arg3", "&", (char *)0);
+      } else {
+
+        char **buf = malloc(argc - 3 + 1);
+        for (int i = 0; i < (argc - 3 + 1); i++) {
+          buf[i] = malloc(255);
+
+          if (i != (argc - 3))
+            strcpy(buf[i], argv[i + 3]);
+          else
+            buf[i] = 0;
+        }
+        printf("test\n");
+        // С полным путём: нужно мочь программно находить путь which java (dir
+        // open и так далее)
+        const char *s = getenv("PATH");
+        printf("PATH :%s\n", (s != NULL) ? s : "getenv returned NULL");
+        printf("end test\n");
+        create(argv[2], buf);
+      }
+    }
+
+  } else if (!strcmp(argv[1], "--test") || !strcmp(argv[1], "-t")) {
+
+    char **buf = malloc(255);
+    for (int i = 0; i < 255; i++) {
+      buf[i] = malloc(255);
+    }
+    while (buf)
+      scanf("%s", buf);
+    printf("%s\n", buf);
+    return 0;
+
   } else {
     printf("Неизвестная опция %s, воспользуйтесь --help|-h\n", argv[1]);
   }
 
+  while (1) {
+    // обработка сигналов
+    signal(20, log_out);
+  }
   return 0;
 }
+
+/*
+С полным путём: нужно мочь программно находить путь which java (dir open и так
+далее) Сделать строку ввода команд sigaction - брать любой из сигналов
+
+
+jobs - посмотреть запущенные процессы в этой оболочке
+nohup ./example/hello & - запустить процесс в фоновом режиме
+jobs
+fg n - вернуться к процессу, который сейчас в фоне (n - номер процесса в списке)
+*/
