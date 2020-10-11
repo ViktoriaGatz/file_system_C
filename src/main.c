@@ -56,57 +56,55 @@ int main(int argc, char **argv) {
         "директории bin\n"
         "--procfs \t\t\t\t отобразить все процессы файловой системы "
         "procfs\n");
-    return 0;
 
   } else if (!strcmp(argv[1], "--move") || !strcmp(argv[1], "-m")) {
     if (argc < 4) {
       fprintf(stderr, "Недостаточно аргументов\n");
       return 0;
+      return 0;
     }
 
     move(argv[2], argv[3]);
-    return 0;
 
   } else if (!strcmp(argv[1], "--copy") || !strcmp(argv[1], "-c")) {
     if (argc < 4) {
       fprintf(stderr, "Недостаточно аргументов\n");
+      return 0;
     }
 
     copy(argv[2], argv[3]);
-    return 0;
 
   } else if (!strcmp(argv[1], "--delete") || !strcmp(argv[1], "-d")) {
     if (argc < 3) {
       fprintf(stderr, "Недостаточно аргументов\n");
+      return 0;
     }
 
     delete (argv[2]);
-    return 0;
 
   } else if (!strcmp(argv[1], "--scope") || !strcmp(argv[1], "-s")) {
     if (argc < 3) {
       fprintf(stderr, "Недостаточно аргументов\n");
+      return 0;
     }
 
     scope(argv[2]);
-    return 0;
 
   } else if (!strcmp(argv[1], "--ls") || !strcmp(argv[1], "-l")) {
     if (argc < 3) {
-      fprintf(stderr, "Недостаточно аргументов\n");
+      argv[2] = "./";
     }
 
     ls(argv[2]);
-    return 0;
 
   } else if (!strcmp(argv[1], "--procfs") || !strcmp(argv[1], "-p")) {
 
     procfs();
-    return 0;
 
   } else if (!strcmp(argv[1], "--create") || !strcmp(argv[1], "-r")) {
     if (argc < 3) {
       fprintf(stderr, "Недостаточно аргументов\n");
+      return 0;
     }
 
     if (argc >= 4) {
@@ -149,20 +147,44 @@ int main(int argc, char **argv) {
       }
     }
 
-  } else if (!strcmp(argv[1], "--test") || !strcmp(argv[1], "-t")) {
-
-    // char **buf = malloc(255);
-    // for (int i = 0; i < 255; i++) {
-    //   buf[i] = malloc(255);
-    // }
-    // while (buf)
-    //   scanf("%s", buf);
-    // printf("%s\n", buf);
-    // return 0;
+  } else if (!strcmp(argv[1], "--console") || !strcmp(argv[1], "-n")) {
 
   } else {
     printf("Неизвестная опция %s, воспользуйтесь --help|-h\n", argv[1]);
   }
+
+  // режим консоли
+  char *buf = malloc(255);
+  printf("\nВведите новую команду:\n");
+
+  fgets(buf, 255, stdin);
+  printf("%s\n", buf);
+
+  char **param = malloc(255);
+  for (int i = 0; i < 255; i++) {
+    param[i] = malloc(255);
+  }
+
+  strcpy(param[0], "./bin/proc");
+
+  char *istr;
+  int j = 1;
+  istr = strtok(buf, " ");
+  while (istr != NULL) {
+    strcpy(param[j], istr);
+    // printf("%s\n", param[j]);
+    istr = strtok(NULL, " ");
+    j++;
+  }
+  if (j > 1) {
+    int count = strlen(param[j - 1]);
+    param[j - 1][count - 1] = '\0';
+    // printf("count = %d\n", count);
+  }
+  param[j] = NULL;
+
+  execv("./bin/proc", param);
+  // конец режима консоли
 
   while (1) {
     // обработка сигналов
