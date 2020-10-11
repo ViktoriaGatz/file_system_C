@@ -1,4 +1,5 @@
 #include "fileio.h"
+#include <dirent.h> // ls
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +8,41 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h> // работа с процессами
+
+void console() {
+  // режим консоли
+  char *buf = malloc(255);
+  printf("\nВведите новую команду:\n");
+
+  fgets(buf, 255, stdin);
+  // printf("%s\n", buf);
+
+  char **param = malloc(255);
+  for (int i = 0; i < 255; i++) {
+    param[i] = malloc(255);
+  }
+
+  strcpy(param[0], "./bin/proc");
+
+  char *istr;
+  int j = 1;
+  istr = strtok(buf, " ");
+  while (istr != NULL) {
+    strcpy(param[j], istr);
+    // printf("%s\n", param[j]);
+    istr = strtok(NULL, " ");
+    j++;
+  }
+  if (j > 1) {
+    int count = strlen(param[j - 1]);
+    param[j - 1][count - 1] = '\0';
+    // printf("count = %d\n", count);
+  }
+  param[j] = NULL;
+
+  execv("./bin/proc", param);
+  // конец режима консоли
+}
 
 void log_out(int signo) {
   printf("%d\n", signo);
@@ -31,6 +67,40 @@ int create(char *name, char *args[]) {
 }
 
 int main(int argc, char **argv) {
+
+  char *path = getenv("PATH");
+
+  char **path_s = malloc(255);
+  for (int i = 0; i < 255; i++) {
+    path_s[i] = malloc(255);
+  }
+
+  char *istr;
+  int j = 0;
+  istr = strtok(path, ":");
+  while (istr != NULL) {
+    DIR *dir;
+    struct dirent *ent;
+
+    strcpy(path_s[j], istr);
+    printf("PAAAAAAAAAAAAAAAAAAAAAAAATH%s\n", path_s[j]);
+    if ((dir = opendir(path_s[j])) != NULL) {
+      while ((ent = readdir(dir)) != NULL) {
+        if (!strcmp(ent->d_name, "java")) {
+          strcat(path_s[j], "/java");
+          printf("%s\n", path_s[j]);
+          printf("%d\n", execl(path_s[j], "java", "-version", NULL));
+          break;
+        }
+      }
+      closedir(dir);
+    }
+
+    istr = strtok(NULL, ":");
+    j++;
+  }
+
+  return 0;
 
   if (argc < 2) {
     fprintf(
@@ -152,38 +222,7 @@ int main(int argc, char **argv) {
     printf("Неизвестная опция %s, воспользуйтесь --help|-h\n", argv[1]);
   }
 
-  // режим консоли
-  char *buf = malloc(255);
-  printf("\nВведите новую команду:\n");
-
-  fgets(buf, 255, stdin);
-  // printf("%s\n", buf);
-
-  char **param = malloc(255);
-  for (int i = 0; i < 255; i++) {
-    param[i] = malloc(255);
-  }
-
-  strcpy(param[0], "./bin/proc");
-
-  char *istr;
-  int j = 1;
-  istr = strtok(buf, " ");
-  while (istr != NULL) {
-    strcpy(param[j], istr);
-    // printf("%s\n", param[j]);
-    istr = strtok(NULL, " ");
-    j++;
-  }
-  if (j > 1) {
-    int count = strlen(param[j - 1]);
-    param[j - 1][count - 1] = '\0';
-    // printf("count = %d\n", count);
-  }
-  param[j] = NULL;
-
-  execv("./bin/proc", param);
-  // конец режима консоли
+  console();
 
   while (1) {
     // обработка сигналов
