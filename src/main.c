@@ -151,14 +151,14 @@ int main(int argc, char **argv) {
 
   } else if (!strcmp(argv[1], "--test") || !strcmp(argv[1], "-t")) {
 
-    char **buf = malloc(255);
-    for (int i = 0; i < 255; i++) {
-      buf[i] = malloc(255);
-    }
-    while (buf)
-      scanf("%s", buf);
-    printf("%s\n", buf);
-    return 0;
+    // char **buf = malloc(255);
+    // for (int i = 0; i < 255; i++) {
+    //   buf[i] = malloc(255);
+    // }
+    // while (buf)
+    //   scanf("%s", buf);
+    // printf("%s\n", buf);
+    // return 0;
 
   } else {
     printf("Неизвестная опция %s, воспользуйтесь --help|-h\n", argv[1]);
