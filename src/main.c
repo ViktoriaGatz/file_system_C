@@ -61,7 +61,6 @@ int main(int argc, char **argv) {
     if (argc < 4) {
       fprintf(stderr, "Недостаточно аргументов\n");
       return 0;
-      return 0;
     }
 
     move(argv[2], argv[3]);
@@ -158,7 +157,7 @@ int main(int argc, char **argv) {
   printf("\nВведите новую команду:\n");
 
   fgets(buf, 255, stdin);
-  printf("%s\n", buf);
+  // printf("%s\n", buf);
 
   char **param = malloc(255);
   for (int i = 0; i < 255; i++) {
