@@ -50,6 +50,14 @@ void log_out(int signo) {
 }
 
 int create(char *name, char *args[]) {
+  printf("name = %s\n", name);
+
+  int m = 0;
+  while (args[m] != NULL) {
+    printf("args[%d] = %s\n", m, args[m]);
+    m++;
+  }
+
   int child_status;
   pid_t child = fork();
   if (child == 0) {
@@ -66,9 +74,9 @@ int create(char *name, char *args[]) {
   return 0;
 }
 
-int main(int argc, char **argv) {
-
+char *searchPath(char *name) {
   char *path = getenv("PATH");
+  // printf("PATH :%s\n", (path != NULL) ? path : "getenv returned NULL");
 
   char **path_s = malloc(255);
   for (int i = 0; i < 255; i++) {
@@ -86,11 +94,12 @@ int main(int argc, char **argv) {
     printf("PAAAAAAAAAAAAAAAAAAAAAAAATH%s\n", path_s[j]);
     if ((dir = opendir(path_s[j])) != NULL) {
       while ((ent = readdir(dir)) != NULL) {
-        if (!strcmp(ent->d_name, "java")) {
-          strcat(path_s[j], "/java");
+        if (!strcmp(ent->d_name, name)) {
+          strcat(path_s[j], "/");
+          strcat(path_s[j], name);
           printf("%s\n", path_s[j]);
-          printf("%d\n", execl(path_s[j], "java", "-version", NULL));
-          break;
+          // printf("%d\n", execl(path_s[j], "java", "-version", NULL));
+          return path_s[j];
         }
       }
       closedir(dir);
@@ -100,8 +109,16 @@ int main(int argc, char **argv) {
     j++;
   }
 
-  return 0;
+  return NULL;
+}
 
+int main(int argc, char **argv) {
+
+  int m = 0;
+  while (argv[m] != NULL) {
+    printf("argv[%d] = %s\n", m, argv[m]);
+    m++;
+  }
   if (argc < 2) {
     fprintf(
         stderr,
@@ -184,7 +201,7 @@ int main(int argc, char **argv) {
           buf[i] = malloc(255);
         }
         buf[0] = "nohup";
-        strcpy(buf[1], argv[3]);
+        strcpy(buf[1], searchPath(argv[3]));
         for (int i = 0; i < (argc - 4); i++) {
           strcpy(buf[i + 2], argv[i + 4]);
         }
@@ -192,27 +209,20 @@ int main(int argc, char **argv) {
         buf[count - 1] = 0;
 
         create("/usr/bin/nohup", buf);
-        // printf("%d\n", execl("ls", "ls", "./", (char *)0));
-        // execl("/usr/bin/nohup", "nohup", "./example/hello", "arg1", "arg2",
-        //       "arg3", "&", (char *)0);
       } else {
 
-        char **buf = malloc(argc - 3 + 1);
-        for (int i = 0; i < (argc - 3 + 1); i++) {
+        char **buf = malloc(255);
+        for (int i = 0; i < argc - 1; i++) {
           buf[i] = malloc(255);
-
-          if (i != (argc - 3))
-            strcpy(buf[i], argv[i + 3]);
-          else
-            buf[i] = 0;
         }
-        printf("test\n");
-        // С полным путём: нужно мочь программно находить путь which java (dir
-        // open и так далее)
-        const char *s = getenv("PATH");
-        printf("PATH :%s\n", (s != NULL) ? s : "getenv returned NULL");
-        printf("end test\n");
-        create(argv[2], buf);
+
+        int y = 0;
+        while (argv[y + 2] != NULL) {
+          strcpy(buf[y], argv[y + 2]);
+          y++;
+        }
+        buf[y] = NULL;
+        create(searchPath(argv[2]), buf);
       }
     }
 
